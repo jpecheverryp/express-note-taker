@@ -53,14 +53,20 @@ app.delete('/api/notes/:id', (req,res) => {
             if (err) throw err;
             // Storing Notes array
             const noteArray = JSON.parse(data);
+            // finding note using id
             const selectedNote = noteArray.find(element => element.id === noteId);
+            // getting index of the note
             const noteIndex = noteArray.indexOf(selectedNote);
+            // removing note from array
             if(noteIndex > -1) {
                 noteArray.splice(noteIndex, 1);
             }
+            // writing notes to DB
             fs.writeFile('./db/db.json', JSON.stringify(noteArray), (err) => {
+                // handling error
                 if (err) throw err;
-                res.redirect('/');
+                // sending response to client
+                res.json(noteArray)
             })
         })
     } catch (e) {
