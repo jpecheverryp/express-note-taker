@@ -32,11 +32,35 @@ app.post("/api/notes", (req, res) => {
     try {
         fs.readFile('./db/db.json', 'utf8', (err, data) => {
             if (err) throw err;
-            const noteArray = JSON.parse(data)
+            const noteArray = JSON.parse(data);
             noteArray.push(newNote);
             fs.writeFile('./db/db.json', JSON.stringify(noteArray), (err) => {
                 if (err) throw err;
                 res.json(noteArray);
+            })
+        })
+    } catch (e) {
+        res.status(500).json(e);
+    }
+})
+
+app.delete('/api/notes/:id', (req,res) => {
+    const noteId = req.params.id;
+    try {
+        // Reading the database 
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            // Handling Error
+            if (err) throw err;
+            // Storing Notes array
+            const noteArray = JSON.parse(data);
+            const selectedNote = noteArray.find(element => element.id === noteId);
+            const noteIndex = noteArray.indexOf(selectedNote);
+            if(noteIndex > -1) {
+                noteArray.splice(noteIndex, 1);
+            }
+            fs.writeFile('./db/db.json', JSON.stringify(noteArray), (err) => {
+                if (err) throw err;
+                res.redirect('/');
             })
         })
     } catch (e) {
